@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>SOLG Test</title>
+</head>
+<body>
+  <h1>SOLG Test</h1>
+  <div id="data"></div>
+  <button id="col-to-purple">Set Color To Purple</button>
+  <script>
+    const dataDiv = document.getElementById('data')
+    const colorSwitchBtn = document.getElementById('col-to-purple')
+
+    const ws = new WebSocket('ws://localhost:3001/dev/graphql')
+    ws.onclose = (close) => console.log('WS closed', close)
+    ws.onerror = (err) => console.error('WS errored', err)
+    ws.onopen = async function init() {
+      // init msg
+      ws.send(JSON.stringify({type: 'connection_init', payload: {}}))
+
+      // SETUP SUBSCRIPTION
+      ws.send(JSON.stringify({id: '1', type: 'start', payload: {
+        variables: {},
+        extensions: {},
+        operationName: 'S',
+        query: `subscription S { vehicle(numberPlate: "325529-3295") { numberPlate color }}`
+      }}))
+
+      // GET CURRENT DATA ONCE
+      ws.send(JSON.stringify({id: '2', type: 'start', payload: {
+        variables: {},
+        extensions: {},
+        operationName: 'Q',
+        query: `query Q { vehicle(numberPlate: "325529-3295") { numberPlate color }}`
+      }}))
+    }
+    ws.onmessage = function handleMsg(msg) {
+      console.log('WS msg', msg)
+
+      if (msg.data) {
+        const data = JSON.parse(msg.data)
+        if (data.payload && data.payload.data && data.payload.data.vehicle) {
+          const { numberPlate, color } = data.payload.data.vehicle
+          let vehicle = document.getElementById(numberPlate)
+          let newVehicle = false
+          if (!vehicle) {
+            newVehicle = true
+            vehicle = document.createElement('p')
+          }
+          vehicle.className = 'vehicle'
+          vehicle.id = numberPlate
+          vehicle.textContent = numberPlate
+          vehicle.style.color = color
+          if (newVehicle) {
+            dataDiv.appendChild(vehicle)
+          }
+        }
+      }
+    }
+
+    // MUTATE DATA
+    colorSwitchBtn.addEventListener('click', () => {
+      ws.send(JSON.stringify({id: '3', type: 'start', payload: {
+        variables: {},
+        extensions: {},
+        operationName: 'M',
+        query: `mutation M { changeVehicleColor(numberPlate: "325529-3295", newColor: "purple") { numberPlate color }}`
+      }}))
+    })
+
+  </script>
+</body>
+</html>
