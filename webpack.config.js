@@ -31,8 +31,6 @@ module.exports = {
     ],
   },
   plugins: [
-    new ForkTsCheckerWebpackPlugin({
-      tsconfig: './tsconfig.json',
-    }),
+    new ForkTsCheckerWebpackPlugin(),
   ],
 }

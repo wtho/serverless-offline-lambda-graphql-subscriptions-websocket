@@ -15,52 +15,57 @@ provider:
   # overwrite defaults here
   stage: dev
   region: eu-central-1
+  lambdaHashingVersion: 20201221
+  apiGateway:
+    shouldStartNameWithService: true
 
   # statements to the Lambda function's IAM Role here
-  iamRoleStatements:
-    - Effect: Allow
-      Action:
-        - execute-api:ManageConnections
-      Resource: 'arn:aws:execute-api:*:*:*/development/POST/@connections/*'
-    - Effect: Allow
-      Action:
-        - dynamodb:DeleteItem
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:UpdateItem
-      # Resource: !GetAtt ConnectionsDynamoDBTable.Arn
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE__CONNECTIONS}"
-    - Effect: Allow
-      Action:
-        - dynamodb:DescribeStream
-        - dynamodb:GetRecords
-        - dynamodb:GetShardIterator
-        - dynamodb:ListStreams
-      # Resource: !GetAtt EventsDynamoDBTable.StreamArn
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE__EVENTS}/stream"
-    - Effect: Allow
-      Action:
-        - dynamodb:PutItem
-      # Resource: !GetAtt EventsDynamoDBTable.Arn
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE__EVENTS}"
-    - Effect: Allow
-      Action:
-        - dynamodb:BatchWriteItem
-        - dynamodb:DeleteItem
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-        - dynamodb:Query
-        - dynamodb:Scan
-      # Resource: !GetAtt SubscriptionsDynamoDBTable.Arn
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE__SUBSCRIPTIONS}"
-    - Effect: Allow
-      Action:
-        - dynamodb:BatchWriteItem
-        - dynamodb:DeleteItem
-        - dynamodb:GetItem
-        - dynamodb:PutItem
-      # Resource: !GetAtt SubscriptionOperationsDynamoDBTable.Arn
-      Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE__SUBSCRIPTION_OPERATIONS}"
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - execute-api:ManageConnections
+          Resource: 'arn:aws:execute-api:*:*:*/development/POST/@connections/*'
+        - Effect: Allow
+          Action:
+            - dynamodb:DeleteItem
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:UpdateItem
+          # Resource: !GetAtt ConnectionsDynamoDBTable.Arn
+          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE__CONNECTIONS}"
+        - Effect: Allow
+          Action:
+            - dynamodb:DescribeStream
+            - dynamodb:GetRecords
+            - dynamodb:GetShardIterator
+            - dynamodb:ListStreams
+          # Resource: !GetAtt EventsDynamoDBTable.StreamArn
+          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE__EVENTS}/stream"
+        - Effect: Allow
+          Action:
+            - dynamodb:PutItem
+          # Resource: !GetAtt EventsDynamoDBTable.Arn
+          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE__EVENTS}"
+        - Effect: Allow
+          Action:
+            - dynamodb:BatchWriteItem
+            - dynamodb:DeleteItem
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+            - dynamodb:Query
+            - dynamodb:Scan
+          # Resource: !GetAtt SubscriptionsDynamoDBTable.Arn
+          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE__SUBSCRIPTIONS}"
+        - Effect: Allow
+          Action:
+            - dynamodb:BatchWriteItem
+            - dynamodb:DeleteItem
+            - dynamodb:GetItem
+            - dynamodb:PutItem
+          # Resource: !GetAtt SubscriptionOperationsDynamoDBTable.Arn
+          Resource: "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:provider.environment.DYNAMODB_TABLE__SUBSCRIPTION_OPERATIONS}"
 
 
   environment:
